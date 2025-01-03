@@ -1,0 +1,152 @@
+1. 
+Download virtual machine and ubuntu
+Download the New Buildroot Version
+If you haven't already downloaded buildroot-2024.11.tar.gz, get it from the Buildroot official site:
+wget https://buildroot.org/downloads/buildroot-2024.11.tar.gz
+https://github.com/HarveyShaw-UWE/BPOS---Environment-Sensor/tree/main
+Extract the tarball:
+tar -xvf buildroot-2024.11.tar.gz
+
+Move into the extracted directory:
+cd buildroot-2024.11
+
+make raspberrypi5_defconfig 
+make menuconfig
+make all - check it works
+
+
+nav to /home/vboxuser/buildroot-2024.11/board/raspberrypi5
+copy and paste the folder with called overlay:
+overlay/ 
+        gpio_server.py
+          templates/
+            index.html
+/////////////////////////////////////////////////////////////////////////
+2.
+copy and paste the post-build.sh in to you dev area 
+here: /home/vboxuser/buildroot-2024.11/board/raspberrypi5/post-build.sh
+
+Ensure your post-build.sh script is executable:
+open terminal and paste:
+
+chmod +x /home/vboxuser/buildroot-2024.11/board/raspberrypi5/post-build.sh
+
+//////////////////////////////////////////////////////////////////////////////////
+Ensure that the Adafruit_Python_DHT-master directory is present in your Buildroot source tree and that it gets copied into the target filesystem during the build process.
+
+Check if the directory exists in your Buildroot folder:
+
+ls -l /home/vboxuser/buildroot-2024.11/board/raspberrypi5/Adafruit_Python_DHT-master
+
+If it’s missing, download and extract it to the expected location:
+
+wget https://github.com/adafruit/Adafruit_Python_DHT/archive/master.zip
+unzip master.zip -d /home/vboxuser/buildroot-2024.11/board/raspberrypi5/
+
+//////////////////////////////////////////////////////////////////////////////////
+3.
+Update Buildroot Configuration
+
+    Open the Buildroot menu configuration:
+
+make menuconfig
+
+Navigate to System configuration > Custom scripts to run after creating filesystem images.
+Set the script path to:
+
+    /home/vboxuser/buildroot-2024.11/board/raspberrypi5/post-build.sh
+
+Navigate to System configuration > Root filesystem overlay directories
+Set the path to:
+/home/vboxuser/buildroot-2024.11/board/raspberrypi5/overlay/
+
+    Save and exit.
+
+Navigate to System configuration > set password root :XXX
+
+///////////////////////////////////////////////////////////////////////////////
+4.
+
+Navigate to:
+Target Packages -> Hardware handling ->=raspi-gpio
+
+Target Packages -> Interpreter languages -> Python3 -> python3
+Target Packages -> Interpreter languages -> Python3 -> python3->core-> -xml module
+Target Packages -> Interpreter languages -> Python3 -> external -> Python-flask
+Target Packages -> Interpreter languages -> Python3 -> external -> py-lxml
+Target Packages -> Interpreter languages -> Python3 -> external -> pip
+Target Packages -> Interpreter languages -> Python3 -> external -> rpi-gpio
+Target Packages -> Interpreter languages -> Python3 -> external -> wrapt
+Target Packages -> Interpreter languages -> python3-> external -> -xml
+
+Target Packages ->lib> Hardware handling ->=. libgpiod -> install tools
+Target Packages -> Libraries->-hardware-libiio
+
+Target Packages -> Libraries->json/xml-roxml,mini-xml
+
+Target Packages -> Libraries-> Networking applications -> libcurl
+Target Packages -> Networking applications -> bind-tools
+Target Packages -> Networking applications -> dhcpcd (or udhcpc)
+Target packages -> Networking applications -> dhcp -> dhcp client
+Target Packages -> Networking applications -> Dropbear
+Target Packages -> Networking applications -> ifupdown-scripts
+Target Packages -> Networking applications -> iputils
+Target Packages -> Networking applications -> openssh
+Target Packages -> Networking applications -> tcpdump
+Target Packages -> Networking applications -> wget
+Target Packages -> Networking applications -> whois
+Target Packages -> Networking applications -> ntp
+
+text editors-enable nano
+
+
+build it -make
+
+Now using the pi imager to creade the bootable sdcard -
+
+PI imager it will create two partitions and one of them will be called rootfs 
+remove the SD card and reinsert to see the drive in windows
+you wont be able to see the rootfs partion on a windows PC 
+
+add the (overlays) folder to the  sd card from windows file browser.
+/////////////////////////////////////////////////////////////////////////////////
+5.
+
+wire up the distance sensor to the PI
+connect the ethernet 
+put sd card in PI and boot
+On your PC set the network device connected to the pi to share the internet> right click properties >sharing> select Allow
+
+On your PC set the network device connected to the WIFI to share the internet> right click properties >sharing> select Allow
+
+on the pi log in as usual 
+
+python3 /usr/local/bin/gpio_server.py
+python3 /usr/local/bin/read.py
+DHTsensor.py
+debugging type:
+find / -name gpio_server.py
+
+now on you PC open web browser and type 169.x.x.x(IPaddress):5000 given on the PI terminal output you should no see the html of the pi
+
+//////////////////////////////////////////////////////////////////
+6.
+
+
+SET THE DATE AND TIME
+
+SET THE PC WIFI TO SHARED
+check internet-ping google.com
+
+pip3 install Adafruit_DHT
+
+test :
+python3
+
+import time
+import Adafruit_DHT
+
+
+
+
+
